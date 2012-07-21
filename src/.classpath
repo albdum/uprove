@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="main/java"/>
+	<classpathentry kind="src" path="sample/java"/>
+	<classpathentry kind="src" path="test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/cpaquin/Documents/Credentica/Legacy/Transfered to Microsoft/Credentica_Final_Remediated/JUnit-related -- NOT FOR DISTRIBUTION/third-party_libraries/junit3.8.1/junit.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
