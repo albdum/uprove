@@ -39,15 +39,15 @@ public class SDKSample
     {
         System.out.println("U-Prove Java SDK sample");
 
+        /*
+        * issuer parameters setup
+        */
         final IKAPBuilder builder = IKAPBuilder.newBuilder();
         final IssuerKeyAndParameters ikap = builder.build();
+        final IssuerParameters ip = ikap.getIssuerParameters();
+
 
         try {
-            /*
-             * issuer parameters setup
-             */
-
-            IssuerParameters ip = ikap.getIssuerParameters();
 
             // issuer distributes the issuer parameters
 
@@ -142,16 +142,16 @@ public class SDKSample
     {
         System.out.println("U-Prove Java SDK Device sample");
 
+        /*
+        * issuer parameters setup
+        */
         final IKAPBuilder builder = IKAPBuilder.newBuilder()
             .havingSupportDevice(true);
         final IssuerKeyAndParameters ikap = builder.build();
+        final IssuerParameters ip = ikap.getIssuerParameters();
+
 
         try {
-            /*
-             * issuer parameters setup
-             */
-
-            IssuerParameters ip = ikap.getIssuerParameters();
 
             // issuer distributes the issuer parameters
 
