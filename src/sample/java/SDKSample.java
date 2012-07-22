@@ -34,219 +34,219 @@ import com.microsoft.uprove.UProveToken;
  */
 public class SDKSample {
 
-	/**
+    /**
      * Runs the sample.
      */
     public static void Sample() throws IllegalStateException, IOException, InvalidProofException, NoSuchProviderException, NoSuchAlgorithmException {
-    	System.out.println("U-Prove Java SDK sample");
+        System.out.println("U-Prove Java SDK sample");
 
-    	try {
-    		/*
-    		 * issuer parameters setup
-    		 */
+        try {
+            /*
+             * issuer parameters setup
+             */
 
-    		IssuerSetupParameters isp = new IssuerSetupParameters();
-    		isp.setEncodingBytes(new byte[] {1,0});
-    		isp.setHashAlgorithmUID("SHA-256");
-    		isp.setParametersUID("unique UID".getBytes());
-    		isp.setSpecification("specification".getBytes());
-    		IssuerKeyAndParameters ikap = isp.generate();
-    		IssuerParameters ip = ikap.getIssuerParameters();
+            IssuerSetupParameters isp = new IssuerSetupParameters();
+            isp.setEncodingBytes(new byte[] {1,0});
+            isp.setHashAlgorithmUID("SHA-256");
+            isp.setParametersUID("unique UID".getBytes());
+            isp.setSpecification("specification".getBytes());
+            IssuerKeyAndParameters ikap = isp.generate();
+            IssuerParameters ip = ikap.getIssuerParameters();
 
-    		// issuer distributes the issuer parameters
+            // issuer distributes the issuer parameters
 
 
-    		// prover and verifier should validate the issuer parameters upon reception
-    		ip.validate();
+            // prover and verifier should validate the issuer parameters upon reception
+            ip.validate();
 
-    		/*
-    		 *  token issuance
-    		 */
+            /*
+             *  token issuance
+             */
 
-    		System.out.println("Issuing U-Prove tokens");
-    		
-    		// protocol parameters
-    		byte[][] attributes = new byte[][] {
-    				"first attribute".getBytes(),
-    				"second attribute".getBytes()
-    		};
-    		byte[] tokenInformation = "token information".getBytes();
-    		byte[] proverInformation = "prover information".getBytes();
-    		int numberOfTokens = 5;
+            System.out.println("Issuing U-Prove tokens");
 
-    		// issuer generates first issuance message
-    		IssuerProtocolParameters issuerProtocolParams = new IssuerProtocolParameters();
-    		issuerProtocolParams.setIssuerKeyAndParameters(ikap);
-    		issuerProtocolParams.setNumberOfTokens(numberOfTokens);
-    		issuerProtocolParams.setTokenAttributes(attributes);
-    		issuerProtocolParams.setTokenInformation(tokenInformation);
-    		Issuer issuer = issuerProtocolParams.generate();
-    		byte[][] message1 = issuer.generateFirstMessage();
+            // protocol parameters
+            byte[][] attributes = new byte[][] {
+                    "first attribute".getBytes(),
+                    "second attribute".getBytes()
+            };
+            byte[] tokenInformation = "token information".getBytes();
+            byte[] proverInformation = "prover information".getBytes();
+            int numberOfTokens = 5;
 
-    		// prover generates second issuance message
-    		ProverProtocolParameters proverProtocolParams = new ProverProtocolParameters();
-    		proverProtocolParams.setIssuerParameters(ip);
-    		proverProtocolParams.setNumberOfTokens(numberOfTokens);
-    		proverProtocolParams.setTokenAttributes(attributes);
-    		proverProtocolParams.setTokenInformation(tokenInformation);
-    		proverProtocolParams.setProverInformation(proverInformation);
-    		Prover prover = proverProtocolParams.generate();
-    		byte[][] message2 = prover.generateSecondMessage(message1);
+            // issuer generates first issuance message
+            IssuerProtocolParameters issuerProtocolParams = new IssuerProtocolParameters();
+            issuerProtocolParams.setIssuerKeyAndParameters(ikap);
+            issuerProtocolParams.setNumberOfTokens(numberOfTokens);
+            issuerProtocolParams.setTokenAttributes(attributes);
+            issuerProtocolParams.setTokenInformation(tokenInformation);
+            Issuer issuer = issuerProtocolParams.generate();
+            byte[][] message1 = issuer.generateFirstMessage();
 
-    		// issuer generates third issuance message
-    		byte[][] message3 = issuer.generateThirdMessage(message2);
+            // prover generates second issuance message
+            ProverProtocolParameters proverProtocolParams = new ProverProtocolParameters();
+            proverProtocolParams.setIssuerParameters(ip);
+            proverProtocolParams.setNumberOfTokens(numberOfTokens);
+            proverProtocolParams.setTokenAttributes(attributes);
+            proverProtocolParams.setTokenInformation(tokenInformation);
+            proverProtocolParams.setProverInformation(proverInformation);
+            Prover prover = proverProtocolParams.generate();
+            byte[][] message2 = prover.generateSecondMessage(message1);
 
-    		// prover generates the U-Prove tokens
-    		UProveKeyAndToken[] upkt = prover.generateTokens(message3);
+            // issuer generates third issuance message
+            byte[][] message3 = issuer.generateThirdMessage(message2);
 
-    		// application specific storage of keys, tokens, and attributes
+            // prover generates the U-Prove tokens
+            UProveKeyAndToken[] upkt = prover.generateTokens(message3);
 
-    		/*
-    		 * token presentation
-    		 */
+            // application specific storage of keys, tokens, and attributes
 
-    		System.out.println("Presenting a U-Prove token");
-    		
-    		// protocol parameters (shared by prover and verifier)
-    		int[] disclosed = new int[] {2};
-    		byte[] message = "message".getBytes();
+            /*
+             * token presentation
+             */
 
-    		// prover chooses a token to use
-    		UProveKeyAndToken keyAndToken = upkt[0];
+            System.out.println("Presenting a U-Prove token");
 
-    		// prover generates the presentation proof
-    		PresentationProof proof = PresentationProtocol.generatePresentationProof(ip, disclosed, message, null, keyAndToken, attributes);
+            // protocol parameters (shared by prover and verifier)
+            int[] disclosed = new int[] {2};
+            byte[] message = "message".getBytes();
 
-    		// prover transmits the U-Prove token and presentation proof to the verifier 
-    		UProveToken token = keyAndToken.getToken();
+            // prover chooses a token to use
+            UProveKeyAndToken keyAndToken = upkt[0];
 
-    		// verifier verifies the presentation proof
-    		PresentationProtocol.verifyPresentationProof(ip, disclosed, message, null, token, proof);
-    	}
-    	catch (Exception e) {
-    		System.out.println(e.toString());
-    		e.printStackTrace(System.out);
-    		return;
-    	}
-    	
-    	System.out.println("Sample completed successfully");
+            // prover generates the presentation proof
+            PresentationProof proof = PresentationProtocol.generatePresentationProof(ip, disclosed, message, null, keyAndToken, attributes);
+
+            // prover transmits the U-Prove token and presentation proof to the verifier
+            UProveToken token = keyAndToken.getToken();
+
+            // verifier verifies the presentation proof
+            PresentationProtocol.verifyPresentationProof(ip, disclosed, message, null, token, proof);
+        }
+        catch (Exception e) {
+            System.out.println(e.toString());
+            e.printStackTrace(System.out);
+            return;
+        }
+
+        System.out.println("Sample completed successfully");
     }
 
-	/**
+    /**
      * Runs the Device sample.
      */
     public static void DeviceSample() throws IllegalStateException, IOException, InvalidProofException, NoSuchProviderException, NoSuchAlgorithmException {
-    	System.out.println("U-Prove Java SDK Device sample");
+        System.out.println("U-Prove Java SDK Device sample");
 
-    	try {
-    		/*
-    		 * issuer parameters setup
-    		 */
+        try {
+            /*
+             * issuer parameters setup
+             */
 
-    		IssuerSetupParameters isp = new IssuerSetupParameters();
-    		isp.setEncodingBytes(new byte[] {1,0});
-    		isp.setHashAlgorithmUID("SHA-256");
-    		isp.setParametersUID("unique UID".getBytes());
-    		isp.setSpecification("specification".getBytes());
-    		isp.setSupportDevice(true);
-    		IssuerKeyAndParameters ikap = isp.generate();
-    		IssuerParameters ip = ikap.getIssuerParameters();
+            IssuerSetupParameters isp = new IssuerSetupParameters();
+            isp.setEncodingBytes(new byte[] {1,0});
+            isp.setHashAlgorithmUID("SHA-256");
+            isp.setParametersUID("unique UID".getBytes());
+            isp.setSpecification("specification".getBytes());
+            isp.setSupportDevice(true);
+            IssuerKeyAndParameters ikap = isp.generate();
+            IssuerParameters ip = ikap.getIssuerParameters();
 
-    		// issuer distributes the issuer parameters
+            // issuer distributes the issuer parameters
 
 
-    		// prover and verifier should validate the issuer parameters upon reception
-    		ip.validate();
+            // prover and verifier should validate the issuer parameters upon reception
+            ip.validate();
 
-    		/*
-    		 *  token issuance
-    		 */
+            /*
+             *  token issuance
+             */
 
-    		System.out.println("Issuing U-Prove tokens");
-    		
-    		// protocol parameters
-    		byte[][] attributes = new byte[][] {
-    				"first attribute".getBytes(),
-    				"second attribute".getBytes()
-    		};
-    		byte[] tokenInformation = "token information".getBytes();
-    		byte[] proverInformation = "prover information".getBytes();
-    		int numberOfTokens = 5;
+            System.out.println("Issuing U-Prove tokens");
 
-    		// Device setup
-    		DeviceSetupParameters deviceSetupParams = new DeviceSetupParameters();
-    		deviceSetupParams.setIssuerParameters(ip);
-    		Device device = deviceSetupParams.generate();
-    		int dIndex = ip.getProverIssuanceValues().length-1;
-    		byte[] deviceZetaParameter = device.GetDeviceParameter(ip.getProverIssuanceValues()[dIndex]);
-    		byte[] devicePublicKey = device.GetDevicePublicKey();
-    		
-    		// issuer generates first issuance message
-    		IssuerProtocolParameters issuerProtocolParams = new IssuerProtocolParameters();
-    		issuerProtocolParams.setIssuerKeyAndParameters(ikap);
-    		issuerProtocolParams.setNumberOfTokens(numberOfTokens);
-    		issuerProtocolParams.setTokenAttributes(attributes);
-    		issuerProtocolParams.setTokenInformation(tokenInformation);
-    		issuerProtocolParams.setDevicePublicKey(devicePublicKey);
-    		Issuer issuer = issuerProtocolParams.generate();
-    		byte[][] message1 = issuer.generateFirstMessage();
+            // protocol parameters
+            byte[][] attributes = new byte[][] {
+                    "first attribute".getBytes(),
+                    "second attribute".getBytes()
+            };
+            byte[] tokenInformation = "token information".getBytes();
+            byte[] proverInformation = "prover information".getBytes();
+            int numberOfTokens = 5;
 
-    		// prover generates second issuance message
-    		ProverProtocolParameters proverProtocolParams = new ProverProtocolParameters();
-    		proverProtocolParams.setIssuerParameters(ip);
-    		proverProtocolParams.setNumberOfTokens(numberOfTokens);
-    		proverProtocolParams.setTokenAttributes(attributes);
-    		proverProtocolParams.setTokenInformation(tokenInformation);
-    		proverProtocolParams.setProverInformation(proverInformation);
-    		proverProtocolParams.setDeviceParameters(devicePublicKey, deviceZetaParameter);
-    		Prover prover = proverProtocolParams.generate();
-    		byte[][] message2 = prover.generateSecondMessage(message1);
+            // Device setup
+            DeviceSetupParameters deviceSetupParams = new DeviceSetupParameters();
+            deviceSetupParams.setIssuerParameters(ip);
+            Device device = deviceSetupParams.generate();
+            int dIndex = ip.getProverIssuanceValues().length-1;
+            byte[] deviceZetaParameter = device.GetDeviceParameter(ip.getProverIssuanceValues()[dIndex]);
+            byte[] devicePublicKey = device.GetDevicePublicKey();
 
-    		// issuer generates third issuance message
-    		byte[][] message3 = issuer.generateThirdMessage(message2);
+            // issuer generates first issuance message
+            IssuerProtocolParameters issuerProtocolParams = new IssuerProtocolParameters();
+            issuerProtocolParams.setIssuerKeyAndParameters(ikap);
+            issuerProtocolParams.setNumberOfTokens(numberOfTokens);
+            issuerProtocolParams.setTokenAttributes(attributes);
+            issuerProtocolParams.setTokenInformation(tokenInformation);
+            issuerProtocolParams.setDevicePublicKey(devicePublicKey);
+            Issuer issuer = issuerProtocolParams.generate();
+            byte[][] message1 = issuer.generateFirstMessage();
 
-    		// prover generates the U-Prove tokens
-    		UProveKeyAndToken[] upkt = prover.generateTokens(message3);
+            // prover generates second issuance message
+            ProverProtocolParameters proverProtocolParams = new ProverProtocolParameters();
+            proverProtocolParams.setIssuerParameters(ip);
+            proverProtocolParams.setNumberOfTokens(numberOfTokens);
+            proverProtocolParams.setTokenAttributes(attributes);
+            proverProtocolParams.setTokenInformation(tokenInformation);
+            proverProtocolParams.setProverInformation(proverInformation);
+            proverProtocolParams.setDeviceParameters(devicePublicKey, deviceZetaParameter);
+            Prover prover = proverProtocolParams.generate();
+            byte[][] message2 = prover.generateSecondMessage(message1);
 
-    		// application specific storage of keys, tokens, and attributes
+            // issuer generates third issuance message
+            byte[][] message3 = issuer.generateThirdMessage(message2);
 
-    		/*
-    		 * token presentation
-    		 */
+            // prover generates the U-Prove tokens
+            UProveKeyAndToken[] upkt = prover.generateTokens(message3);
 
-    		System.out.println("Presenting a U-Prove token");
-    		
-    		// protocol parameters (shared by prover and verifier)
-    		int[] disclosed = new int[] {2};
-    		byte[] message = "message".getBytes();
-    		byte[] deviceMessage = "message for Device".getBytes();
+            // application specific storage of keys, tokens, and attributes
 
-    		// prover chooses a token to use
-    		UProveKeyAndToken keyAndToken = upkt[0];
+            /*
+             * token presentation
+             */
 
-    		// prover generates the presentation proof
-    		DeviceManager.RegisterDevice(device);
-    		PresentationProof proof = PresentationProtocol.generatePresentationProof(ip, disclosed, message, deviceMessage, keyAndToken, attributes);
+            System.out.println("Presenting a U-Prove token");
 
-    		// prover transmits the U-Prove token and presentation proof to the verifier 
-    		UProveToken token = keyAndToken.getToken();
+            // protocol parameters (shared by prover and verifier)
+            int[] disclosed = new int[] {2};
+            byte[] message = "message".getBytes();
+            byte[] deviceMessage = "message for Device".getBytes();
 
-    		// verifier verifies the presentation proof
-    		PresentationProtocol.verifyPresentationProof(ip, disclosed, message, deviceMessage, token, proof);
-    	}
-    	catch (Exception e) {
-    		System.out.println(e.toString());
-    		e.printStackTrace(System.out);
-    		return;
-    	}
-    	
-    	System.out.println("Sample completed successfully");
+            // prover chooses a token to use
+            UProveKeyAndToken keyAndToken = upkt[0];
+
+            // prover generates the presentation proof
+            DeviceManager.RegisterDevice(device);
+            PresentationProof proof = PresentationProtocol.generatePresentationProof(ip, disclosed, message, deviceMessage, keyAndToken, attributes);
+
+            // prover transmits the U-Prove token and presentation proof to the verifier
+            UProveToken token = keyAndToken.getToken();
+
+            // verifier verifies the presentation proof
+            PresentationProtocol.verifyPresentationProof(ip, disclosed, message, deviceMessage, token, proof);
+        }
+        catch (Exception e) {
+            System.out.println(e.toString());
+            e.printStackTrace(System.out);
+            return;
+        }
+
+        System.out.println("Sample completed successfully");
     }
 
-    
+
     public static void main(final String[] args) throws IllegalStateException, NoSuchProviderException, NoSuchAlgorithmException, IOException, InvalidProofException {
-    	Sample();
-    	DeviceSample();
+        Sample();
+        DeviceSample();
     }
 
 }
