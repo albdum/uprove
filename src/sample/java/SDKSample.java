@@ -70,7 +70,6 @@ public class SDKSample
                 "second attribute".getBytes()
             };
             byte[] tokenInformation = "token information".getBytes();
-            byte[] proverInformation = "prover information".getBytes();
             int numberOfTokens = 5;
 
             // issuer generates first issuance message
@@ -85,6 +84,8 @@ public class SDKSample
             byte[][] message1 = issuer.generateFirstMessage();
 
             // prover generates second issuance message
+            byte[] proverInformation = "prover information".getBytes();
+
             ProverProtocolParameters proverProtocolParams
                 = new ProverProtocolParameters();
             proverProtocolParams.setIssuerParameters(ip);
@@ -176,7 +177,6 @@ public class SDKSample
                 "second attribute".getBytes()
             };
             byte[] tokenInformation = "token information".getBytes();
-            byte[] proverInformation = "prover information".getBytes();
             int numberOfTokens = 5;
 
             // Device setup
@@ -205,6 +205,8 @@ public class SDKSample
             byte[][] message1 = issuer.generateFirstMessage();
 
             // prover generates second issuance message
+            byte[] proverInformation = "prover information".getBytes();
+
             ProverProtocolParameters proverProtocolParams
                 = new ProverProtocolParameters();
             proverProtocolParams.setIssuerParameters(ip);
