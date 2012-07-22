@@ -12,22 +12,18 @@
 import com.microsoft.uprove.Device;
 import com.microsoft.uprove.DeviceManager;
 import com.microsoft.uprove.DeviceSetupParameters;
-import com.microsoft.uprove.InvalidProofException;
 import com.microsoft.uprove.Issuer;
 import com.microsoft.uprove.IssuerKeyAndParameters;
 import com.microsoft.uprove.IssuerParameters;
 import com.microsoft.uprove.IssuerProtocolParameters;
-import com.microsoft.uprove.IssuerSetupParameters;
 import com.microsoft.uprove.PresentationProof;
 import com.microsoft.uprove.PresentationProtocol;
 import com.microsoft.uprove.Prover;
 import com.microsoft.uprove.ProverProtocolParameters;
 import com.microsoft.uprove.UProveKeyAndToken;
 import com.microsoft.uprove.UProveToken;
-
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import foobar.IKAPBuilder;
+import foobar.UProveException;
 
 /**
  * This samples demonstrates how to issue and present U-Prove tokens.
@@ -39,23 +35,18 @@ public class SDKSample
      * Runs the sample.
      */
     public static void Sample()
-        throws IOException, InvalidProofException, NoSuchProviderException,
-        NoSuchAlgorithmException
+        throws UProveException
     {
         System.out.println("U-Prove Java SDK sample");
+
+        final IKAPBuilder builder = IKAPBuilder.newBuilder();
+        final IssuerKeyAndParameters ikap = builder.build();
 
         try {
             /*
              * issuer parameters setup
              */
 
-            IssuerSetupParameters isp = new IssuerSetupParameters();
-            isp.setEncodingBytes(new byte[]{1, 0});
-            isp.setHashAlgorithmUID("SHA-256");
-            isp.setParametersUID("unique UID".getBytes());
-            isp.setSpecification("specification".getBytes());
-
-            IssuerKeyAndParameters ikap = isp.generate();
             IssuerParameters ip = ikap.getIssuerParameters();
 
             // issuer distributes the issuer parameters
@@ -147,24 +138,18 @@ public class SDKSample
      * Runs the Device sample.
      */
     public static void DeviceSample()
-        throws IOException, InvalidProofException, NoSuchProviderException,
-        NoSuchAlgorithmException
+        throws UProveException
     {
         System.out.println("U-Prove Java SDK Device sample");
+
+        final IKAPBuilder builder = IKAPBuilder.newBuilder()
+            .havingSupportDevice(true);
+        final IssuerKeyAndParameters ikap = builder.build();
 
         try {
             /*
              * issuer parameters setup
              */
-
-            IssuerSetupParameters isp = new IssuerSetupParameters();
-            isp.setEncodingBytes(new byte[]{1, 0});
-            isp.setHashAlgorithmUID("SHA-256");
-            isp.setParametersUID("unique UID".getBytes());
-            isp.setSpecification("specification".getBytes());
-            isp.setSupportDevice(true);
-
-            IssuerKeyAndParameters ikap = isp.generate();
 
             IssuerParameters ip = ikap.getIssuerParameters();
 
@@ -274,8 +259,7 @@ public class SDKSample
 
 
     public static void main(final String[] args)
-        throws IllegalStateException, NoSuchProviderException,
-        NoSuchAlgorithmException, IOException, InvalidProofException
+        throws UProveException
     {
         System.out.println("--- SAMPLE BEGIN ---");
         Sample();
