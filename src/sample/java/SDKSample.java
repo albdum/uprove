@@ -50,6 +50,9 @@ public class SDKSample
 
         // issuer distributes the issuer parameters
         // prover and verifier should validate the issuer parameters upon reception
+        //com:Just like an ssl key exchange. It speaks about two different things
+        //prover and verifier should be independant proggrams running at different
+        //server for different reassons
         try {
             ip.validate();
         } catch (IOException e) {
@@ -71,8 +74,12 @@ public class SDKSample
             };
             byte[] tokenInformation = "token information".getBytes();
             int numberOfTokens = 5;
+            //i believe number of tokens is just how many tokens it will create
+            //consider that u can get as many tokens you want and you may choose
+            //only to use one or nothing or 100 of them.Issuer should and does not
+            //have any idea of what you will make of them
 
-            // issuer generates first issuance message
+            // issuer generates first issuance message. That means the server!
             IssuerProtocolParameters issuerProtocolParams
                 = new IssuerProtocolParameters();
             issuerProtocolParams.setIssuerKeyAndParameters(ikap);
@@ -83,7 +90,9 @@ public class SDKSample
             Issuer issuer = issuerProtocolParams.generate();
             byte[][] message1 = issuer.generateFirstMessage();
 
-            // prover generates second issuance message
+            // prover generates second issuance message. That means the user!
+            //my guess is that this section should go to the client side of
+            //proggram and should have as input the message1 from the issuer.
             byte[] proverInformation = "prover information".getBytes();
 
             ProverProtocolParameters proverProtocolParams
@@ -97,36 +106,55 @@ public class SDKSample
             Prover prover = proverProtocolParams.generate();
             byte[][] message2 = prover.generateSecondMessage(message1);
 
-            // issuer generates third issuance message
+            // issuer generates third issuance message.This should be at the
+            //server side of proggram and should take as input the message2
+            //from prover(client)
             byte[][] message3 = issuer.generateThirdMessage(message2);
 
-            // prover generates the U-Prove tokens
+            // prover generates the U-Prove tokens.That means that the user(prover)
+            //takes as input the message3 and creates the upkt a.k.a the keytoken
             UProveKeyAndToken[] upkt = prover.generateTokens(message3);
 
             // application specific storage of keys, tokens, and attributes
+            //here it should be some code on prover(client) side that could make
+            //possible the saving of the upkt(maybe an xml scheme?)
 
             /*
              * token presentation
              */
+             //this should be on the verification proccess it has nothing to do with
+             //first part it should be another proggram that is responsible to give
+             //the token that prover(client) has to some third party.
 
             System.out.println("Presenting a U-Prove token");
 
             // protocol parameters (shared by prover and verifier)
+            //as it says prover and verifier now take place here
+            //the disclosed part should be the number of elements inside the token
+            //that the user(prover) wants to share with the verifier
+            //Keep in mind that you could have an ID here with 10 elements and  user
+            //wants to give only first two e.x. the name and last name
             int[] disclosed = new int[]{2};
             byte[] message = "message".getBytes();
 
-            // prover chooses a token to use
+            // prover chooses a token to use. I believe here that has something to do
+            //with the number of tokens we created.
             UProveKeyAndToken keyAndToken = upkt[0];
 
-            // prover generates the presentation proof
+            // prover generates the presentation proof. This part is a bit blur
+            //but i believe all the variables are taken into account and somehow
+            //compared with the keyandtoken so without communicating with the server
+            //(issuer) the client(prover) can prove that those infos he gave are correct 
             PresentationProof proof
                 = PresentationProtocol.generatePresentationProof(ip, disclosed,
                 message, null, keyAndToken, attributes);
 
             // prover transmits the U-Prove token and presentation proof to the verifier
+            //and sents the token to the verifier
             UProveToken token = keyAndToken.getToken();
 
-            // verifier verifies the presentation proof
+            // verifier verifies the presentation proof.
+            //verifier should be able to get the token prover sent and run the following
             PresentationProtocol.verifyPresentationProof(ip, disclosed,
                 message, null, token, proof);
         } catch (Exception e) {
