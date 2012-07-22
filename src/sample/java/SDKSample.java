@@ -25,6 +25,8 @@ import com.microsoft.uprove.UProveToken;
 import foobar.IKAPBuilder;
 import foobar.UProveException;
 
+import java.io.IOException;
+
 /**
  * This samples demonstrates how to issue and present U-Prove tokens.
  */
@@ -46,14 +48,15 @@ public class SDKSample
         final IssuerKeyAndParameters ikap = builder.build();
         final IssuerParameters ip = ikap.getIssuerParameters();
 
+        // issuer distributes the issuer parameters
+        // prover and verifier should validate the issuer parameters upon reception
+        try {
+            ip.validate();
+        } catch (IOException e) {
+            throw new UProveException("issuer could not distribute parameters");
+        }
 
         try {
-
-            // issuer distributes the issuer parameters
-
-
-            // prover and verifier should validate the issuer parameters upon reception
-            ip.validate();
 
             /*
              *  token issuance
@@ -151,13 +154,15 @@ public class SDKSample
         final IssuerParameters ip = ikap.getIssuerParameters();
 
 
+        // issuer distributes the issuer parameters
+        // prover and verifier should validate the issuer parameters upon reception
         try {
-
-            // issuer distributes the issuer parameters
-
-
-            // prover and verifier should validate the issuer parameters upon reception
             ip.validate();
+        } catch (IOException e) {
+            throw new UProveException("issuer could not distribute parameters");
+        }
+
+        try {
 
             /*
              *  token issuance
